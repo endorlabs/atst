@@ -1,0 +1,42 @@
+[build-system]
+requires = ['setuptools', 'setuptools-scm']
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "endorlabs-pipeline-helper"
+authors = [{name = "Darren Meyer", email = 'darren@endor.ai'}]
+description = "Endor Labs Pipeline Helper -- a tool to help deploy and manage Endor Labs in CI pipelines"
+requires-python = ">=3.9"
+dependencies = [
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest~=7.4"
+]
+
+
+[project.scripts]
+endorlabs = 'endorlabs_pipeline_helper.__main__:main'
+
+[tool.setuptools.dynamic]
+version = {attr = "endorlabs_pipeline_helper.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+exclude = ["pytest*"]
+# include = ["my_package*"]  # package names should match these glob patterns (["*"] by default)
+# exclude = ["my_package.tests*"]  # exclude packages matching these glob patterns (empty by default)
+# namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib"
+]
+testpaths = [
+    "pytest"
+]
+markers = [
+
+]
