@@ -13,5 +13,6 @@ jobs:
       - name: Setup AT-ST
         run: |
           # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
-          python3 -m pip install --upgrade .
-          endorlabs-atst --help
+          python3 -m venv ../.atst
+          ../.atst/bin/python3 -m pip install --upgrade .
+          ../.atst/bin/endorlabs-atst --help
