@@ -18,7 +18,7 @@ test = [
 
 
 [project.scripts]
-endorlabs = 'endorlabs_pipeline_helper.__main__:main'
+endorlabs-atst = 'endorlabs_pipeline_helper.__main__:main'
 
 [tool.setuptools.dynamic]
 version = {attr = "endorlabs_pipeline_helper.__version__"}
