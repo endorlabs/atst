@@ -16,8 +16,8 @@ jobs:
         run: |
           # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
           # python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
-          python3 -m pip install --upgrade -t $HOME/endorlabs . && mkdir -p $HOME/.local/bin && ln -s $HOME/endorlabs/bin/endorlabs-atst $HOME/.local/bin/endorlabs-atst
-          ls -lR $HOME/.local/bin
-          endorlabs-atst setup
+          python3 -m pip install --upgrade -t $HOME/endorlabs
+          echo "$HOME/endorlabs/bin:$PATH" >> $GITHUB_PATH
+          ~/endorlabs/bin/endorlabs-atst setup
       - name: Host Checkout
         run: ../endorctl host-check
