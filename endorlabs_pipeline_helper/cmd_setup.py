@@ -34,7 +34,7 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
     
     osname = CI.runner_os 
     arch = CI.runner_arch
-    
+
     if version == 'latest' or version is None:
         (version, _sha256) = get_endorctl_latest_data(osname, arch)
         sha256 = _sha256 if sha256 is None else sha256
@@ -102,8 +102,15 @@ def check_endorctl_version(command_path:str, ver_rule:str='>=1.5'):
     '--endorlabs-command-path',
     envvar='ENDORLABS_COMMAND_PATH',
     hidden=True)
+@click.option(
+    '--namespace',
+    envvar='ENDOR_NAMESPACE',
+    )
+@click.option(
+    '--auth',
+    help="auth data for endor; follows SCHEMA:AUTHDATA e.g. 'api:API_KEY:API_SECRET'")
 @click.pass_context
-def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path):
+def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, namespace, auth):
     Status.debug(f"subcommand: setup")
     Status.debug(f"Requested version {endorlabs_version} with SHA256 '{'' if endorlabs_sha256sum is None else endorlabs_sha256sum}'")
     if endorlabs_command_path is None:
@@ -123,3 +130,18 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path):
         Status.report(CI.end_group())
 
     CI.prepend_env_path(ctx.obj['scriptdir'])
+    if namespace is not None:
+        CI.set_env('ENDOR_NAMESPACE', namespace)
+    if auth is not None:
+        try:
+            (schema, rule) = auth.strip().split(':', maxsplit=1)
+            if schema.lower() == 'api':
+                Status.debug('extracting secret and key from api schema argument')
+                (api_key, api_secret) = rule.strip().split(':', maxsplit=1)
+                CI.set_env('ENDOR_API_CREDENTIALS_KEY', api_key)
+                CI.set_env('ENDOR_API_CREDENTIALS_SECRET', api_secret)
+        except ValueError as e:
+            Status.error(f"Invalid schema spec '{auth}'")  # TODO redact sensitive data?
+            Status.debug(str(e))
+
+    # TODO setup endorctl config with namespace/etc

@@ -1,4 +1,5 @@
-import os, sys
+import os, sys, shlex
+import warnings
 
 # local
 from .osarch import get_osarch, OS_MAP, ARCH_MAP
@@ -12,6 +13,7 @@ class CI_Environment(object):
         self._group_end = '--'
         self._os = None
         self._arch = None
+        self._env = {}
         self.setup()
 
     def _append_to_file(self, filename:str, *lines):
@@ -30,6 +32,11 @@ class CI_Environment(object):
             raise ValueError("Can't end a group when when one isn't started")
         self.current_group = None
         return self._group_end
+
+    def set_env(self, name:str, value:object):
+        warnings.warn(f"Can't set environment persistently in a {self.name}", RuntimeWarning)
+        self._env[name] = value
+
 
     def set_env_path(self, newval:str):
         pass
@@ -53,8 +60,6 @@ class CI_Environment(object):
 
     def setup(self):
         pass
-
-        
         
 
 class CI_GitHub(CI_Environment):
@@ -83,6 +88,9 @@ class CI_GitHub(CI_Environment):
         if self._os is None:  # the env didn't work, fall back
             super().runner_arch
         return self._arch
+
+    def set_env(self, name:str, value:object):
+       return self._append_to_file(os.getenv('GTIHUB_ENV', None), f"{name}={shlex.quote(str(value))}")
 
 
 def detected_CI():

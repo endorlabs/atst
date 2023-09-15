@@ -13,8 +13,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Install AT-ST
+        env:
+          ENDORLABS_API_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
         run: |
           # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
-          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade . ; ../.atst/bin/endorlabs-atst setup
+          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
+          ../.atst/bin/endorlabs-atst setup --auth api:${ENDORLABS_API_KEY}:${ENDORLABS_API_SECRET}
+
       - name: Endor Labs Host Check
         run: endorctl host-check
