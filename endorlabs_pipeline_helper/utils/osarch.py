@@ -7,7 +7,9 @@ OS_MAP = {
     'linux': 'linux'
 }
 
-ARCH_MAP = {}
+ARCH_MAP = {
+    'x86_64': 'amd64'
+}
 
 def get_osarch(osname=None, arch=None):
     uname = os.uname()

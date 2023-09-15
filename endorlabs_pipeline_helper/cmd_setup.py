@@ -45,6 +45,8 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
     try:
         dlhash = hashlib.sha256()
         dl = requests.get(dlpath, stream=True)
+        dl.raise_for_status()
+        
         prog_updater = TimedProgress(every=10)
         prog_updater.start(f"Downloading endorctl {version} for {osname} on {arch}")
         dl_size = 0
