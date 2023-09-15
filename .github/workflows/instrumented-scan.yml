@@ -2,10 +2,9 @@ name: Endor Labs AT-ST Self-Scan
 on: push
 
 jobs:
-  build-and-scan:
+  endorlabs-setup-and-scan:
     permissions:
-      id-token: write   # Write permission is required to request a JWT token to perform keyless authentication
-      contents: read  # Required by actions/checkout@v3 to checkout a private repository.
+      contents: read    # Required by actions/checkout@v3 to checkout a private repository.
     runs-on: ubuntu-latest
     env:
       DEBUG: 1
@@ -15,13 +14,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Install AT-ST
+      - name: Endor Labs Setup
         run: |
-          # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
           python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
           ../.atst/bin/endorlabs-atst setup
 
       - name: Endor Labs Host Check
-        run: |
-          env | grep ENDOR
-          endorctl host-check
+        run: endorctl host-check
