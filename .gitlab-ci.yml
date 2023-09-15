@@ -1,6 +1,6 @@
 build-job:
   stage: build
-  image: gitlab/gitlab-runner:ubuntu
+  image: ubuntu:22.04
   script: |
     apt install -y python3.11-venv
     python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
