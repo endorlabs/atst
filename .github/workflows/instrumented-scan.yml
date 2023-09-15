@@ -20,4 +20,4 @@ jobs:
       - name: Setup Endor Labs
         run: endorlabs-atst setup
       - name: Host Checkout
-        run: ../endorctl host-check
+        run: endorctl host-check
