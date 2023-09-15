@@ -7,6 +7,8 @@ jobs:
       id-token: write   # Write permission is required to request a JWT token to perform keyless authentication
       contents: read  # Required by actions/checkout@v3 to checkout a private repository.
     runs-on: ubuntu-latest
+    env:
+      DEBUG: 1
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
