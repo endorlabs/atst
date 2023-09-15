@@ -70,7 +70,7 @@ class CI_GitHub(CI_Environment):
         self._group_end = '##[endgroup]'
 
     def set_env_path(self, newval:str):
-        self._append_to_file(os.getenv('GITHUB_PATH', None), newval)
+        self._append_to_file(os.getenv('GITHUB_PATH', None), newval = "\n")
         return newval
 
     @property
@@ -90,7 +90,7 @@ class CI_GitHub(CI_Environment):
         return self._arch
 
     def set_env(self, name:str, value:object):
-       return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}")
+       return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}\n")
 
 
 def detected_CI():
