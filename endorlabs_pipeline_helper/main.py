@@ -19,4 +19,9 @@ def main(ctx):
     ctx.ensure_object(dict)
     if os.getenv('DEBUG', False) or os.getenv(f'{CONFIG_PREFIX}_DEBUG', False):
         Status.loglevel = Status.DEBUG
+    
+    if Status.loglevel <= Status.DEBUG:
+        for pth in os.getenv('PATH','').split(':'):
+            if os.access(pth, os.W_OK):
+                Status.debug(f"'{pth}' is{'' if os.access(pth, os.W_OK) else ' NOT'} writable")
     Status.info(f"Starting {ctx.info_name} {__package_version}")
