@@ -2,7 +2,8 @@
 import os, sys
 
 # local
-from .utils import StatusWriter, ci_detection
+from .utils import StatusWriter
+from .utils.ci_detection import detected_CI
 from . import __version__ as __package_version
 
 # installed
@@ -12,7 +13,7 @@ CONFIG_PREFIX = 'ATST'
 CLICK_CONTEXT_SETTINGS = { 'auto_envvar_prefix': CONFIG_PREFIX }
 
 Status = StatusWriter()
-CI = ci_detection.detected_CI()
+CI = detected_CI()
 
 @click.group(context_settings=CLICK_CONTEXT_SETTINGS)
 @click.pass_context
