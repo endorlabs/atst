@@ -140,6 +140,7 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, n
                 (api_key, api_secret) = rule.strip().split(':', maxsplit=1)
                 CI.set_env('ENDOR_API_CREDENTIALS_KEY', api_key)
                 CI.set_env('ENDOR_API_CREDENTIALS_SECRET', api_secret)
+                Status.debug(f"Set key='{api_key}' with secret '{api_secret}' from '{rule}'")
         except ValueError as e:
             Status.error(f"Invalid schema spec '{auth}'")  # TODO redact sensitive data?
             Status.debug(str(e))
