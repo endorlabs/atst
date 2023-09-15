@@ -90,7 +90,7 @@ class CI_GitHub(CI_Environment):
         return self._arch
 
     def set_env(self, name:str, value:object):
-       return self._append_to_file(os.getenv('GTIHUB_ENV', None), f"{name}={shlex.quote(str(value))}")
+       return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}")
 
 
 def detected_CI():
