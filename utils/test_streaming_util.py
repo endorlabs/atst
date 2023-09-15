@@ -6,4 +6,14 @@ def filter_write(line):
     return(line)
 
 ec = StreamedProcess(['ls'])
-ec.run(stderr_handler=filter_write)
+# ec.run(stderr_handler=filter_write)
+ec.run()
+while ec.check_join() is None:
+    out = ec.stdout.getline()
+    if out is not None and len(out):
+        print(ec.stdout.getline(), end="")
+    err = ec.stderr.getline()
+    if err is not None and len(err):
+        print("E:" + ec.stderr.getline(), end="")
+
+exit(ec.process.returncode)

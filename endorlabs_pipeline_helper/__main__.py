@@ -1,6 +1,6 @@
-from .main import *
+import warnings
 
-Status.loglevel = Status.DEBUG
-Status.debug("Test DEBUG")
-Status.info("Test INFO")
-Status.info("Continued INFO line", cont=True)
+from .main import *
+from .cmd_setup import setup
+
+warnings.filterwarnings('ignore')
