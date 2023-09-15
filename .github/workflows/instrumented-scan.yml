@@ -9,20 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEBUG: 1
+      ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
+      ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
+      ENDOR_NAMESPACE: darren-learn
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Install AT-ST
-        env:
-          ENDORLABS_API_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
-          ENDORLABS_API_KEY: ${{ vars.ENDORLABS_API_KEY }}
         run: |
           # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
           python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
-          ../.atst/bin/endorlabs-atst setup\
-            --auth api:${ENDORLABS_API_KEY}:${ENDORLABS_API_SECRET}\
-            --namespace darren-learn
-          env | grep ENDOR
+          ../.atst/bin/endorlabs-atst setup
 
       - name: Endor Labs Host Check
         run: |

@@ -105,12 +105,15 @@ def check_endorctl_version(command_path:str, ver_rule:str='>=1.5'):
 @click.option(
     '--namespace',
     envvar='ENDOR_NAMESPACE',
-    )
+    required=True)
 @click.option(
     '--auth',
     help="auth data for endor; follows SCHEMA:AUTHDATA e.g. 'api:API_KEY:API_SECRET'")
+# TODO add env options so that API key and SECRET are picked up from env if set
 @click.pass_context
 def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, namespace, auth):
+    """Setup the CI environment to use Endor Labs
+    """
     Status.debug(f"subcommand: setup")
     Status.debug(f"Requested version {endorlabs_version} with SHA256 '{'' if endorlabs_sha256sum is None else endorlabs_sha256sum}'")
     if endorlabs_command_path is None:
