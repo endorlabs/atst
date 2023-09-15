@@ -12,8 +12,7 @@ class CI_Environment(object):
 
     def _append_to_file(self, filename:str, *lines):
         with open(filename, 'a') as target:
-            for line in lines:
-                target.print(line)
+            target.writelines(lines)
         return None
 
     def start_group(self, title):
