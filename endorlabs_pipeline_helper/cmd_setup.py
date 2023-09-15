@@ -107,16 +107,17 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path):
     if endorlabs_command_path is None:
         endorlabs_command_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
 
+    need_to_download = True
     if os.path.exists(endorlabs_command_path):
         (version, complies) = check_endorctl_version(endorlabs_command_path)
         if complies:
             # TODO not sure if this is right, might want to try to see if _current_ version is newer and still complies; could get complex
             Status.info(f"Existing '{endorlabs_command_path}' @{version} is compliant, leaving in place") 
-        else:
-            CI.start_group("Downloading endorctl")
-            download_endorctl(endorlabs_version, endorlabs_sha256sum, _filepath=endorlabs_command_path)
-            CI.end_group()
-    else:
-        CI.start_group("Downloading endorctl")
+            need_to_download = False
+    
+    if need_to_download:
+        Status.report(CI.start_group("Downloading endorctl"))
         download_endorctl(endorlabs_version, endorlabs_sha256sum, _filepath=endorlabs_command_path)
-        CI.end_group()
+        Status.report(CI.end_group())
+
+    CI.prepend_env_path(ctx.obj['scriptdir'])
