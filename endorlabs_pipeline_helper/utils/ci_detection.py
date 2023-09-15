@@ -27,7 +27,7 @@ class CI_Environment(object):
         
         
 
-class CI_GitHub(object):
+class CI_GitHub(CI_Environment):
     def setup(self):
         self.name = 'GitHub'
         self.path = os.getenv('GITHUB_WORKSPACE', '.')
