@@ -1,5 +1,7 @@
 import os, sys
 
+# local
+from .osarch import get_osarch, OS_MAP, ARCH_MAP
 
 class CI_Environment(object):
     def __init__(self):
@@ -8,6 +10,8 @@ class CI_Environment(object):
         self.current_group = None
         self._group_format = '{message}'
         self._group_end = '--'
+        self._os = None
+        self._arch = None
         self.setup()
 
     def _append_to_file(self, filename:str, *lines):
@@ -35,6 +39,18 @@ class CI_Environment(object):
         pth += f"{':' if len(pth) else ''}{newpath}"
         return self.set_env_path(pth)
 
+    @property
+    def runner_os(self):
+        if self._os is None:
+            (self._os, self._arch) = get_osarch()
+        return self._os
+
+    @property
+    def runner_arch(self):
+        if self._arch is None:
+            (self._os, self._arch) = get_osarch()
+        return self._arch
+
     def setup(self):
         pass
 
@@ -51,6 +67,22 @@ class CI_GitHub(CI_Environment):
     def set_env_path(self, newval:str):
         self._append_to_file(os.getenv('GITHUB_PATH', None), newval)
         return newval
+
+    @property
+    def runner_os(self):
+        if self._os is None:
+            self._os = OS_MAP.get(os.getenv('RUNNER_OS', '').lower().strip(), None)
+        if self._os is None:  # the env didn't work, fall back
+            super().runner_os
+        return self._os
+
+    @property
+    def runner_arch(self):
+        if self._arch is None:
+            self._arch = ARCH_MAP.get(os.getenv('RUNNER_ARCH', '').lower().strip(), None)
+        if self._os is None:  # the env didn't work, fall back
+            super().runner_arch
+        return self._arch
 
 
 def detected_CI():

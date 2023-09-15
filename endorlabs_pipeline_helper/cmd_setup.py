@@ -32,7 +32,9 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
     if _dlpath is None:
         _dlpath = _DL_PATHS['proxy']
     
-    (osname, arch) = osarch.get_osarch()
+    osname = CI.runner_os 
+    arch = CI.runner_arch
+    
     if version == 'latest' or version is None:
         (version, _sha256) = get_endorctl_latest_data(osname, arch)
         sha256 = _sha256 if sha256 is None else sha256

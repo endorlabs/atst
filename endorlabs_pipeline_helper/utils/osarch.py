@@ -8,7 +8,10 @@ OS_MAP = {
 }
 
 ARCH_MAP = {
-    'x86_64': 'amd64'
+    'x86_64': 'amd64',
+    'x64': 'amd64',
+    'arm64': 'arm64',
+    'amd64': 'amd64'
 }
 
 def get_osarch(osname=None, arch=None):
