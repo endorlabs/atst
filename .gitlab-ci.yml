@@ -1,0 +1,6 @@
+build-job:
+  stage: build
+  script: |
+      python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
+      ../.atst/bin/endorlabs-atst setup
+  
