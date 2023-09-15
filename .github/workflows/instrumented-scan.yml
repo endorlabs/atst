@@ -15,9 +15,6 @@ jobs:
       - name: Install AT-ST
         run: |
           # python3 -m pip install --upgrade "git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY@$GITHUB_REF"
-          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
-          echo "$PWD/../.atst/bin:$PATH" >> $GITHUB_PATH
-      - name: Setup Endor Labs
-        run: endorlabs-atst setup
-      - name: Host Checkout
+          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade . ; ../.atst/bin/endorlabs-atst setup
+      - name: Endor Labs Host Check
         run: endorctl host-check
