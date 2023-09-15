@@ -7,7 +7,7 @@ import requests ; requests.packages.urllib3.disable_warnings(True)
 import semantic_version
 
 # local
-from .main import main, Status, CLICK_CONTEXT_SETTINGS
+from .main import main, Status, CI, CLICK_CONTEXT_SETTINGS
 from .utils import osarch
 from .utils.statuswriter import TimedProgress
 from .utils.commandstreamer import StreamedProcess
@@ -46,7 +46,7 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
         dlhash = hashlib.sha256()
         dl = requests.get(dlpath, stream=True)
         dl.raise_for_status()
-        
+
         prog_updater = TimedProgress(every=10)
         prog_updater.start(f"Downloading endorctl {version} for {osname} on {arch}")
         dl_size = 0
@@ -65,6 +65,7 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
             if int(sha256, 16) == int(digest, 16):
                 Status.info(f"Verified download matches SHA256 {sha256}")
                 os.chmod(_filepath, 0o750)
+                Status.info(f"Successfully downloaded to '{_filepath}'")
             else:
                 Status.error(f"Verification failed; expected {sha256}, got {digest}")
                 raise ValueError("SHA256 sum mismatch")
@@ -98,19 +99,24 @@ def check_endorctl_version(command_path:str, ver_rule:str='>=1.5'):
 @click.option(
     '--endorlabs-command-path',
     envvar='ENDORLABS_COMMAND_PATH',
-    default='../endorctl',
     hidden=True)
 @click.pass_context
 def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path):
     Status.debug(f"subcommand: setup")
     Status.debug(f"Requested version {endorlabs_version} with SHA256 '{'' if endorlabs_sha256sum is None else endorlabs_sha256sum}'")
+    if endorlabs_command_path is None:
+        endorlabs_command_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
+
     if os.path.exists(endorlabs_command_path):
         (version, complies) = check_endorctl_version(endorlabs_command_path)
         if complies:
             # TODO not sure if this is right, might want to try to see if _current_ version is newer and still complies; could get complex
             Status.info(f"Existing '{endorlabs_command_path}' @{version} is compliant, leaving in place") 
         else:
+            CI.start_group("Downloading endorctl")
             download_endorctl(endorlabs_version, endorlabs_sha256sum, _filepath=endorlabs_command_path)
+            CI.end_group()
     else:
+        CI.start_group("Downloading endorctl")
         download_endorctl(endorlabs_version, endorlabs_sha256sum, _filepath=endorlabs_command_path)
-    
+        CI.end_group()
