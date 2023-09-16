@@ -104,7 +104,7 @@ class CI_GitLab(CI_Environment):
     def start_group(self, title):
         if self.current_group is not None:
             raise ValueError("Can't start a group when one is already started")
-        self.current_group = int(time.time()) + ":" + title.replace("\n", "").replace(" ", '_')
+        self.current_group = str(int(time.time())) + ":" + title.replace("\n", "").replace(" ", '_')
         # self.current_group = title.replace("\n", "").replace(" ", '_')
         return self._group_format.format(message=title, id=self.current_group)
 
