@@ -111,9 +111,9 @@ class CI_GitLab(CI_Environment):
     def end_group(self):
         if self.current_group is None:
             raise ValueError("Can't end a group when when one isn't started")
+        retval = self._group_end.format(id=self.current_group)
         self.current_group = None
-        retval = self._group_end.format()
-        return self._group_end
+        return retval
 
 
 
