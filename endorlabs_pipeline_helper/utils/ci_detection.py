@@ -99,7 +99,7 @@ class CI_GitLab(CI_Environment):
         self.path = os.getenv('CI_PROJECT_DIR', '.')
         self._group_format = '##[group]{message}'
         self._group_format = "\e[0Ksection_start:{id}\r\e[0K + {message}"
-        self._group_end = "\e[0Ksection_end:{id}\r\e[0K + {message}"
+        self._group_end = "\e[0Ksection_end:{id}\r\e[0K"
 
     def start_group(self, title):
         if self.current_group is not None:
