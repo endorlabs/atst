@@ -93,9 +93,37 @@ class CI_GitHub(CI_Environment):
        return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}\n")
 
 
+class CI_GitLab(CI_Environment):
+    def setup(self):
+        self.name = 'GitLab'
+        self.path = os.getenv('CI_PROJECT_DIR', '.')
+        self._group_format = '##[group]{message}'
+        self._group_format = "\e[0Ksection_start:{id}\r\e[0K + {message}"
+        self._group_end = "\e[0Ksection_end:{id}\r\e[0K + {message}"
+
+    def start_group(self, title):
+        if self.current_group is not None:
+            raise ValueError("Can't start a group when one is already started")
+        self.current_group = int(time.time()) + ":" + title.replace("\n", "").replace(" ", '_')
+        # self.current_group = title.replace("\n", "").replace(" ", '_')
+        return self._group_format.format(message=title, id=self.current_group)
+
+    def end_group(self):
+        if self.current_group is None:
+            raise ValueError("Can't end a group when when one isn't started")
+        self.current_group = None
+        retval = self._group_end.format()
+        return self._group_end
+
+
+
+
 def detected_CI():
     if 'GITHUB_WORKSPACE' in os.environ:
         return CI_GitHub()
+    if 'GITLAB_CI' in os.environ:
+        return CI_GitLab()
+
     ci = CI_Environment()
     ci.name = 'Unknown CI or non-CI'
     return ci

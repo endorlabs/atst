@@ -1,6 +1,11 @@
 build-job:
   stage: build
   image: ubuntu:22.04
+  variables:
+    DEBUG: 1
+    ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
+    ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
+    ENDOR_NAMESPACE: darren-learn
   script: |
     apt-get update
     apt-get install -y python3-venv
