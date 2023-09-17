@@ -21,6 +21,10 @@ endorlabs-scan:
     ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
     ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
     ENDOR_NAMESPACE: darren-learn
+  cache:
+    # use the global cache but don't updated it after scan
+    <<: *global_cache
+    policy: pull
   before_script:
     - apt-get update ; apt-get install -y python3-venv python3-pip
     - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
