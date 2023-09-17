@@ -18,8 +18,8 @@ endorlabs-scan:
   image: ubuntu:22.04
   variables:
     DEBUG: 1
-    ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
-    ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
+    ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
+    ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
     ENDOR_NAMESPACE: darren-learn
   cache:
     # use the global cache but don't updated it after scan
