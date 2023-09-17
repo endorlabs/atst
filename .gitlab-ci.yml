@@ -5,7 +5,24 @@
         - '.venv'  # repo-local venv used for tests and endorlabs scans
 
 build-project:
+.venv-cache:
+  cache:
+    - key: cache-$CI_COMMIT_REF_SLUG
+      paths:
+        - '.venv'  # repo-local venv used for tests and endorlabs scans
+
+build-project:
   stage: build
+  image: ubuntu:22.04
+  extends: .venv-cache
+  before_script:
+    - apt-get update ; apt-get install -y python3-venv python3-pip
+  script:
+    - python3 -m venv '.venv'
+    - .venv/bin/python3 -m pip install .
+
+endorlabs-scan:
+  stage: test
   image: ubuntu:22.04
   extends: .venv-cache
   before_script:
@@ -32,4 +49,5 @@ endorlabs-scan:
     - ../.atst/bin/endorlabs-atst setup
   script:
     - ../.atst/bin/endorctl host-check --verbose
+    - ../.atst/bin/endorctl scan --ci-run --bypass-host-check --verbose
     - ../.atst/bin/endorctl scan --ci-run --bypass-host-check --verbose
