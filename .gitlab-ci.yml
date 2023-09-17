@@ -1,5 +1,18 @@
-build-job:
+build-project:
   stage: build
+  image: ubuntu:22.04
+  cache:
+    - key: cache-$CI_COMMIT_REF_SLUG
+      paths:
+        - '.venv'
+  before_script:
+    - apt-get update ; apt-get install -y python3-venv python3-pip
+  script:
+    - python3 -m venv '.venv'
+    - .venv/bin/python3 -m pip install .
+
+endorlabs-scan:
+  stage: test
   image: ubuntu:22.04
   variables:
     DEBUG: 1

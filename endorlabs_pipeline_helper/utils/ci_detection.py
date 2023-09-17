@@ -121,7 +121,7 @@ class CI_GitLab(CI_Environment):
 
     @property
     def repo_dir(self):
-        repo = os.getenv('CI_PROJECT_DI', None)
+        repo = os.getenv('CI_PROJECT_DIR', None)
         if repo is None:
             repo = super().repo_dir
         return os.path.abspath(repo)
