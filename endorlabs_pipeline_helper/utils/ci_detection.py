@@ -58,6 +58,10 @@ class CI_Environment(object):
             (self._os, self._arch) = get_osarch()
         return self._arch
 
+    @property
+    def repo_dir(self):
+        return os.path.abspath('.')
+
     def setup(self):
         pass
         
@@ -115,6 +119,12 @@ class CI_GitLab(CI_Environment):
         self.current_group = None
         return retval
 
+    @property
+    def repo_dir(self):
+        repo = os.getenv('CI_PROJECT_DI', None)
+        if repo is None:
+            repo = super().repo_dir()
+        return os.path.abspath(repo)
 
 
 
