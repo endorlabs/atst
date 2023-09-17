@@ -1,15 +1,34 @@
-build-job:
+.venv-cache:
+  cache:
+    - key: cache-$CI_COMMIT_REF_SLUG
+      paths:
+        - '.venv'  # repo-local venv used for tests and endorlabs scans
+
+build-project:
   stage: build
+  image: ubuntu:22.04
+  extends: .venv-cache
+  before_script:
+    - apt-get update ; apt-get install -y python3-venv python3-pip
+  script:
+    - python3 -m venv '.venv'
+    - .venv/bin/python3 -m pip install .
+
+endorlabs-scan:
+  stage: test
   image: ubuntu:22.04
   variables:
     DEBUG: 1
-    ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
-    ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
+    ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
+    ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
     ENDOR_NAMESPACE: darren-learn
+  extends: .venv-cache
+  cache:
+    policy: pull
   before_script:
     - apt-get update ; apt-get install -y python3-venv python3-pip
     - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
     - ../.atst/bin/endorlabs-atst setup
   script:
     - ../.atst/bin/endorctl host-check --verbose
-    - ../.atst/bin/endorctl scan --ci-run --bypass-host-check
+    - ../.atst/bin/endorctl scan --ci-run --bypass-host-check --verbose

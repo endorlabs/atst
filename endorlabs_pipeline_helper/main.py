@@ -27,4 +27,5 @@ def main(ctx):
     
     Status.info(f"Starting {ctx.info_name} {__package_version} from {ctx.obj['script']}")
     Status.debug(f"CI type is {type(CI)}, named '{CI.name}'")
+    Status.debug(f"Repo working directory is '{CI.repo_dir}'")
     Status.info(f"Running in {CI.name}")
