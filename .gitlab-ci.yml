@@ -18,10 +18,11 @@ endorlabs-scan:
   stage: test
   image: ubuntu:22.04
   variables:
-    DEBUG: 1
+    ATST_DEBUG: 0  # set debug for ATST
     ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
     ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
     ENDOR_NAMESPACE: darren-learn
+    ENDORLABS_VERSION: latest
   extends: .venv-cache
   cache:
     policy: pull

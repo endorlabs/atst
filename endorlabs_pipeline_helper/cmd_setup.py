@@ -121,7 +121,7 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, n
 
     need_to_download = True
     if os.path.exists(endorlabs_command_path):
-        (version, complies) = check_endorctl_version(endorlabs_command_path)
+        (version, complies) = check_endorctl_version(endorlabs_command_path, endorlabs_version)
         if complies:
             # TODO not sure if this is right, might want to try to see if _current_ version is newer and still complies; could get complex
             Status.info(f"Existing '{endorlabs_command_path}' @{version} is compliant, leaving in place") 
