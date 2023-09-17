@@ -7,11 +7,9 @@ build-job:
     ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
     ENDOR_NAMESPACE: darren-learn
   before_script:
-    - |
-      apt-get update
-      apt-get install -y python3-venv python3-pip
-      python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
-      ../.atst/bin/endorlabs-atst setup
+    - apt-get update ; apt-get install -y python3-venv python3-pip
+    - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
+    - ../.atst/bin/endorlabs-atst setup
   script:
-    - python3 -m pip --version
     - ../.atst/bin/endorctl host-check --verbose
+    - ../.atst/bin/endorctl scan --ci-run --bypass-host-check
