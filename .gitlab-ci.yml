@@ -1,5 +1,5 @@
 default:
-  cache:
+  cache: &global-cache
     - key: cache-$CI_COMMIT_REF_SLUG
       paths:
         - '.venv'  # repo-local venv used for tests and endorlabs scans
