@@ -9,7 +9,7 @@ build-job:
   before_script:
     - |
       apt-get update
-      apt-get install -y python3-venv
+      apt-get install -y python3-venv python3-pip
       python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
       ../.atst/bin/endorlabs-atst setup
   script:
