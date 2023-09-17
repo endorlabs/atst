@@ -1,5 +1,5 @@
-default:
-  cache: &global-cache
+.venv-cache:
+  cache:
     - key: cache-$CI_COMMIT_REF_SLUG
       paths:
         - '.venv'  # repo-local venv used for tests and endorlabs scans
@@ -7,6 +7,7 @@ default:
 build-project:
   stage: build
   image: ubuntu:22.04
+  extends: .venv-cache
   before_script:
     - apt-get update ; apt-get install -y python3-venv python3-pip
   script:
@@ -21,9 +22,8 @@ endorlabs-scan:
     ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
     ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
     ENDOR_NAMESPACE: darren-learn
+  extends: .venv-cache
   cache:
-    # use the global cache but don't updated it after scan
-    <<: *global_cache
     policy: pull
   before_script:
     - apt-get update ; apt-get install -y python3-venv python3-pip
