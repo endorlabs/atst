@@ -18,7 +18,7 @@ endorlabs-scan:
   stage: test
   image: ubuntu:22.04
   variables:
-    ATST_DEBUG: 0  # set debug for ATST
+    # ATST_DEBUG: 1  # set debug for ATST
     ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
     ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
     ENDOR_NAMESPACE: darren-learn
