@@ -20,4 +20,4 @@ jobs:
           ../.atst/bin/endorlabs-atst setup
 
       - name: Endor Labs Host Check
-        run: endorctl host-check
+        run: endorlabs-atst ctl -- scan --ci-run

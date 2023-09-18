@@ -89,30 +89,8 @@ def check_endorctl_version(command_path:str, ver_rule:str='>=1.5'):
     return (detected_version, semver.match(detected_version))
         
 
-
-@main.command(context_settings=CLICK_CONTEXT_SETTINGS)
-@click.option(
-    '--endorlabs-version',
-    envvar='ENDORLABS_VERSION',
-    default='latest')
-@click.option(
-    '--endorlabs-sha256sum',
-    envvar='ENDORLABS_SHA256SUM')
-@click.option(
-    '--endorlabs-command-path',
-    envvar='ENDORLABS_COMMAND_PATH',
-    hidden=True)
-@click.option(
-    '--namespace',
-    envvar='ENDOR_NAMESPACE',
-    required=True)
-@click.option(
-    '--auth',
-    help="auth data for endor; follows SCHEMA:AUTHDATA e.g. 'api:API_KEY:API_SECRET'")
-# TODO add env options so that API key and SECRET are picked up from env if set
-@click.pass_context
-def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, namespace, auth):
-    """Setup the CI environment to use Endor Labs
+def _setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, namespace, auth):
+    """Implementation wrapper for setup() below
     """
     Status.debug(f"subcommand: setup")
     Status.debug(f"Requested version {endorlabs_version} with SHA256 '{'' if endorlabs_sha256sum is None else endorlabs_sha256sum}'")
@@ -121,7 +99,7 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, n
 
     need_to_download = True
     if os.path.exists(endorlabs_command_path):
-        (version, complies) = check_endorctl_version(endorlabs_command_path, endorlabs_version)
+        (version, complies) = check_endorctl_version(endorlabs_command_path, endorlabs_version if endorlabs_version != 'latest' else '>=1.5')
         if complies:
             # TODO not sure if this is right, might want to try to see if _current_ version is newer and still complies; could get complex
             Status.info(f"Existing '{endorlabs_command_path}' @{version} is compliant, leaving in place") 
@@ -149,3 +127,30 @@ def setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, n
             Status.debug(str(e))
 
     # TODO setup endorctl config with namespace/etc
+
+
+@main.command(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option(
+    '--endorlabs-version',
+    envvar='ENDORLABS_VERSION',
+    default='latest')
+@click.option(
+    '--endorlabs-sha256sum',
+    envvar='ENDORLABS_SHA256SUM')
+@click.option(
+    '--endorlabs-command-path',
+    envvar='ENDORLABS_COMMAND_PATH',
+    hidden=True)
+@click.option(
+    '--namespace',
+    envvar='ENDOR_NAMESPACE',
+    required=True)
+@click.option(
+    '--auth',
+    help="auth data for endor; follows SCHEMA:AUTHDATA e.g. 'api:API_KEY:API_SECRET'")
+# TODO add env options so that API key and SECRET are picked up from env if set
+@click.pass_context
+def setup(*args, **kwargs):
+    """Setup the CI environment to use Endor Labs
+    """
+    _setup(*args, **kwargs)

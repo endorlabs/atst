@@ -18,17 +18,34 @@ class StatusWriter(object):
         self.logs = logs
         self.reports = reports
         self.loglevel = loglevel
+        self.errors = []
+        self.warnings = []
 
     def _write(self, *args, files:list=[], sep:str="", nl:bool=True)->None:
         for fd in files:
             print(sep.join(args), end="" if not nl else None)
 
-    def log(self, *args, level:int=2, cont:bool=False, **kwargs)->None:
+    def log(self, *args, level:int=2, cont:bool=False, retain:bool=True, **kwargs)->None:
+        """General log to output
+
+        Args:
+            level (int, optional): Log Level to log at. Defaults to 2 (INFO).
+            cont (bool, optional): Continuation line; if True, line prefix will be a continuation indicator. Defaults to False.
+            retain (bool, optional): Retain errror/warning. Defaults to True.
+
+        Returns:
+            _type_: _description_
+        """
         if level > 0 and level < self.loglevel:
             return None
         level_words = ['|....', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']
+        logprefix = f"{level_words[0 if cont else level]:<5s} " 
+        if level == self.ERROR and retain:
+            self.errors.append(logprefix + " ".join(args))
+        elif level == self.WARNING and retain:
+            self.warnings.append(logprefix + " ".join(args))
 
-        self._write(f"{level_words[0 if cont else level]:<5s} ", *args, files=self.logs, **kwargs)
+        self._write(logprefix, *args, files=self.logs, **kwargs)
 
     def debug(self, *args, **kwargs)->None:
         self.log(*args, level=self.DEBUG, **kwargs)
