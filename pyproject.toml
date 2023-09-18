@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version"]
-name = "endorlabs-pipeline-helper"
+name = "endorlabs-atst"
 authors = [{name = "Darren Meyer", email = 'darren@endor.ai'}]
-description = "Endor Labs Pipeline Helper -- a tool to help deploy and manage Endor Labs in CI pipelines"
+description = "Endor Labs Automated Tool for Scanning Things (ATST) -- a tool to help deploy and manage Endor Labs in CI pipelines"
 requires-python = ">=3.9"
 dependencies = [
     "click~=8.1",
@@ -21,10 +21,10 @@ test = [
 
 
 [project.scripts]
-endorlabs-atst = 'endorlabs_pipeline_helper.__main__:main'
+endorlabs-atst = 'endorlabs_atst.__main__:main'
 
 [tool.setuptools.dynamic]
-version = {attr = "endorlabs_pipeline_helper.__version__"}
+version = {attr = "endorlabs_atst.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
