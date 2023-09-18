@@ -1,0 +1,28 @@
+name: Endor Labs AT-ST Self-Scan
+on:
+  workflow_dispatch: null
+  pull_request:
+    types: [opened, reopened]
+    
+
+jobs:
+  endorlabs-setup-and-scan:
+    permissions:
+      contents: read    # Required by actions/checkout@v3 to checkout a private repository.
+    runs-on: ubuntu-latest
+    env:
+      DEBUG: 1
+      ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
+      ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
+      ENDOR_NAMESPACE: darren-learn
+      CI_RUN: ${{ github.event_name == 'pull_request' && '--ci-run' || '' }}  # use CI Run unless this isn't a PR
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Endor Labs Setup
+        run: |
+          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade git+https://github.com/endorlabs/atst.git@main
+          ../.atst/bin/endorlabs-atst setup
+
+      - name: Endor Labs Scan for ${{ github.event_name }}
+        run: endorlabs-atst ctl -- scan $CI_RUN
