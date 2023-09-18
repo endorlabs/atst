@@ -103,6 +103,8 @@ def ctl(ctx, endorctl_args):
     Status.debug(f"Started subcommand: ctl {endorctl_args}")
     endorctl_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
     exitcode = run_endorctl(endorctl_path, *endorctl_args, extra_env={'ENDOR_LOG_VERBOSE': 'true'})
+    if PROJECT_UUID is not None:
+        Status.info(f"Endor Labs Project UUID: {PROJECT_UUID}")
     if Status.errors or Status.warnings:
         Status.warn("ATST also had:", retain=False)
         Status.warnings.pop(-1)  # remove the warning we just issued ;)
