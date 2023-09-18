@@ -11,7 +11,7 @@ jobs:
       contents: read    # Required by actions/checkout@v3 to checkout a private repository.
     runs-on: ubuntu-latest
     env:
-      DEBUG: 1
+      # DEBUG: 1
       ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
       ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
       ENDOR_NAMESPACE: darren-learn
