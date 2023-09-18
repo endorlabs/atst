@@ -1,5 +1,5 @@
 #stdlib
-import os, shlex, sys, re, json
+import os, shlex, sys, re, json, time
 
 #installed
 import click
@@ -10,7 +10,6 @@ from .cmd_setup import check_endorctl_version, download_endorctl
 from .utils.commandstreamer import StreamedProcess
 
 
-# VERBOSE_LINE_REGEX = re.compile("^(\\d{4}-\\d{2}\\d{2}-.+?)\\s+([A-Z]+)\\s+(\\S+)\\s+(.+)$")
 VERBOSE_LINE_REGEX = re.compile("^(\\d{4}-\\d{2}-\\d{2}T.+?)\\s+([A-Z]+)\\s+(\\S+)\\s+(.+)")
 XDATA_REGEX = re.compile("(\\{.+\\})")
 PROJECT_UUID = None
@@ -18,6 +17,11 @@ ENDORCTL_WARNINGS = []
 ENDORCTL_ERRORS = []
 
 def endorctl_log_filter(filehandle):
+    """Generate a StreamedProcess filter for handling `endorctl` log lines
+
+    Args:
+        filehandle (file): a file handle to write the log to in addition to returning the line
+    """
     def _filter(line):
         global PROJECT_UUID, ENDORCTL_ERRORS, ENDORCTL_WARNINGS
         vmatch = VERBOSE_LINE_REGEX.match(line)
