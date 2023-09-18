@@ -128,7 +128,6 @@ def ctl(ctx, endorctl_args):
     ## Summarize ATST errors/warnings
     if Status.errors or Status.warnings:
         Status.warn("ATST also had:", retain=False)
-        Status.warnings.pop(-1)  # remove the warning we just issued ;)
         if Status.errors:
             Status.log(f"{len(Status.errors)} ERROR messages:", cont=True)
             for err in Status.errors:
