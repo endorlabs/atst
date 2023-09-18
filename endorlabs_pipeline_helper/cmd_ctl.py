@@ -14,10 +14,12 @@ from .utils.commandstreamer import StreamedProcess
 VERBOSE_LINE_REGEX = re.compile("^(\\d{4}-\\d{2}-\\d{2}T.+?)\\s+([A-Z]+)\\s+(\\S+)\\s+(.+)")
 XDATA_REGEX = re.compile("(\\{.+\\})")
 PROJECT_UUID = None
+ENDORCTL_WARNINGS = []
+ENDORCTL_ERRORS = []
 
 def endorctl_log_filter(filehandle):
     def _filter(line):
-        global PROJECT_UUID
+        global PROJECT_UUID, ENDORCTL_ERRORS, ENDORCTL_WARNINGS
         vmatch = VERBOSE_LINE_REGEX.match(line)
         if vmatch:
             (timestamp, level, location, message) = vmatch.groups()
@@ -31,6 +33,10 @@ def endorctl_log_filter(filehandle):
                 message = message.replace(xdata,'').strip()
             # Status.debug(f"{line}\n\t{level:<7s}::{message}::{location}{'::' + Status.json(xdata) if xdata else ''}")
             out = f"{level:<7s} {message}\n"
+            if level.startswith('WARN'):
+                ENDORCTL_WARNINGS.append(out)
+            elif level.startswith('ERR'):
+                ENDORCTL_ERRORS.append(out)
         else:
             out = line
         filehandle.write(line)
@@ -104,8 +110,22 @@ def ctl(ctx, endorctl_args):
     Status.debug(f"Started subcommand: ctl {endorctl_args}")
     endorctl_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
     exitcode = run_endorctl(endorctl_path, *endorctl_args, extra_env={'ENDOR_LOG_VERBOSE': 'true'})
+
+    ## Summarize endorctl errors/warnings
     if PROJECT_UUID is not None:
         Status.info(f"Endor Labs Project UUID: {PROJECT_UUID}")
+    if ENDORCTL_ERRORS or ENDORCTL_WARNINGS:
+        Status.warn("endorctl produced:", retain=False)
+        if ENDORCTL_ERRORS:
+            status.log(f"{len(ENDORCTL_ERRORS)} errors:")
+            for err in ENDORCTL_ERRORS:
+                Status.log(err, cont=True)
+        if ENDORCTL_WARNINGS:
+            status.log(f"{len(ENDORCTL_WARNINGS)} warnings:")
+            for wrn in ENDORCTL_WARNINGS:
+                Status.log(wrn, cont=True)
+    
+    ## Summarize ATST errors/warnings
     if Status.errors or Status.warnings:
         Status.warn("ATST also had:", retain=False)
         Status.warnings.pop(-1)  # remove the warning we just issued ;)
