@@ -130,11 +130,11 @@ def ctl(ctx, endorctl_args):
         Status.warnings.pop(-1)  # remove the warning we just issued ;)
         if Status.errors:
             Status.log(f"{len(Status.errors)} ERROR messages:", cont=True)
-            for err in Status.errors[:-1]:
+            for err in Status.errors:
                 Status.log(err, level=0)
         if Status.warnings:
             Status.log(f"{len(Status.warnings)} WARN messages:", cont=True)
-            for wrn in Status.warnings[:-1]:
+            for wrn in Status.warnings:
                 Status.log(wrn, level=0)
     sys.exit(exitcode)
     
