@@ -128,7 +128,7 @@ class CI_GitLab(CI_Environment):
 
 
 def detected_CI():
-    if 'GITHUB_WORKSPACE' in os.environ:
+    if 'GITHUB_WORKSPACE' in os.environ and os.getenv('GITHUB_ACTIONS', '').upper() == "TRUE":
         return CI_GitHub()
     if 'GITLAB_CI' in os.environ:
         return CI_GitLab()

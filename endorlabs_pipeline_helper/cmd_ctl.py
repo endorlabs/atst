@@ -109,6 +109,7 @@ def ctl(ctx, endorctl_args):
     Status.debug(f"Started subcommand: ctl {endorctl_args}")
     endorctl_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
     exitcode = run_endorctl(endorctl_path, *endorctl_args, extra_env={'ENDOR_LOG_VERBOSE': 'true'})
+    time.sleep(0.8) # try to let all the thread writers finish before final report
 
     ## Summarize endorctl errors/warnings
     if PROJECT_UUID is not None:
