@@ -23,7 +23,8 @@ class StatusWriter(object):
 
     def _write(self, *args, files:list=[], sep:str="", nl:bool=True)->None:
         for fd in files:
-            print(sep.join(args), end="" if not nl else None)
+            print(sep.join(args), file=fd, end="" if not nl else None)
+            fd.flush()
 
     def log(self, *args, level:int=2, cont:bool=False, retain:bool=True, **kwargs)->None:
         """General log to output

@@ -52,7 +52,7 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
         download_endorctl(_filepath=endorctl_path)
 
     if (detected_endorctl_version is None or not semver_match) and retry_count < _retry_limit:
-        run_endorctl(endorctl_path, *endorctl_args, extra_env=extra_env, retry_count=retry_count+1)
+        return run_endorctl(endorctl_path, *endorctl_args, extra_env=extra_env, retry_count=retry_count+1)
 
     ## now actually run the process
     retcode = 1
@@ -76,6 +76,7 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
                 # print all of STDOUT
                 print(CI.start_group("endorctl results"), file=sys.stderr)
                 print(stdout)
+                sys.stdout.flush()
                 print(CI.end_group(), file=sys.stderr)
         retcode = ec.process.returncode
 
