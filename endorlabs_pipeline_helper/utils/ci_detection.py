@@ -9,8 +9,8 @@ class CI_Environment(object):
         self.name = ''
         self._path = '.'
         self.current_group = None
-        self._group_format = '{message}'
-        self._group_end = '--'
+        self._group_format = '---- {message}'
+        self._group_end = '----'
         self._os = None
         self._arch = None
         self._env = {}
@@ -128,7 +128,7 @@ class CI_GitLab(CI_Environment):
 
 
 def detected_CI():
-    if 'GITHUB_WORKSPACE' in os.environ:
+    if 'GITHUB_WORKSPACE' in os.environ and os.getenv('GITHUB_ACTIONS', '').upper() == "TRUE":
         return CI_GitHub()
     if 'GITLAB_CI' in os.environ:
         return CI_GitLab()

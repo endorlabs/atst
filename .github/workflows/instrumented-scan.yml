@@ -16,8 +16,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Endor Labs Setup
         run: |
-          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip install --upgrade .
+          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade .
           ../.atst/bin/endorlabs-atst setup
 
       - name: Endor Labs Host Check
-        run: endorctl host-check
+        run: endorlabs-atst ctl -- scan --ci-run
