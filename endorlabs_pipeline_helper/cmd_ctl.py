@@ -118,11 +118,11 @@ def ctl(ctx, endorctl_args):
         if ENDORCTL_ERRORS:
             Status.log(f"{len(ENDORCTL_ERRORS)} errors:")
             for err in ENDORCTL_ERRORS:
-                Status.log(err, cont=True)
+                Status.log(err.strip(), cont=True)
         if ENDORCTL_WARNINGS:
             Status.log(f"{len(ENDORCTL_WARNINGS)} warnings:")
             for wrn in ENDORCTL_WARNINGS:
-                Status.log(wrn, cont=True)
+                Status.log(wrn.strip(), cont=True)
     
     ## Summarize ATST errors/warnings
     if Status.errors or Status.warnings:
