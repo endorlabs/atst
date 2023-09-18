@@ -93,7 +93,7 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
     if retcode:
         Status.warn(f"{endorctl_path} exited with code {retcode}")
     else:
-        Status.info(f"{endorctl_path} conmpleted successsfully")
+        Status.info(f"{endorctl_path} completed successsfully")
     return retcode
 
 
