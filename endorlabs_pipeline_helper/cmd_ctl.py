@@ -80,10 +80,9 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
             stdout = ''.join(ec.stdout.queue).rstrip()
             if stdout:
                 # print all of STDOUT
-                print(CI.start_group("endorctl results"), file=sys.stderr)
-                print(stdout)
-                sys.stdout.flush()
-                print(CI.end_group(), file=sys.stderr)
+                print(CI.start_group("endorctl results"), file=sys.stderr); sys.stderr.flush()
+                print(stdout); sys.stdout.flush()
+                print(CI.end_group(), file=sys.stderr); sys.stderr.flush()
         retcode = ec.process.returncode
 
     except Exception as e:
@@ -121,7 +120,7 @@ def ctl(ctx, endorctl_args):
             for err in ENDORCTL_ERRORS:
                 Status.log(err, cont=True)
         if ENDORCTL_WARNINGS:
-            status.log(f"{len(ENDORCTL_WARNINGS)} warnings:")
+            Status.log(f"{len(ENDORCTL_WARNINGS)} warnings:")
             for wrn in ENDORCTL_WARNINGS:
                 Status.log(wrn, cont=True)
     
