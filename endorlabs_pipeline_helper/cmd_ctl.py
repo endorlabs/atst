@@ -117,7 +117,7 @@ def ctl(ctx, endorctl_args):
     if ENDORCTL_ERRORS or ENDORCTL_WARNINGS:
         Status.warn("endorctl produced:", retain=False)
         if ENDORCTL_ERRORS:
-            status.log(f"{len(ENDORCTL_ERRORS)} errors:")
+            Status.log(f"{len(ENDORCTL_ERRORS)} errors:")
             for err in ENDORCTL_ERRORS:
                 Status.log(err, cont=True)
         if ENDORCTL_WARNINGS:
