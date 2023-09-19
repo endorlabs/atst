@@ -29,7 +29,7 @@ endorlabs-scan:
   cache:
     policy: pull
   before_script:
-    - apt-get update ; apt-get install -y python3-venv python3-pip
+    - apt-get update ; apt-get install -y python3-venv python3-pip git
     - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade .
     # - ../.atst/bin/endorlabs-atst setup
   script:
