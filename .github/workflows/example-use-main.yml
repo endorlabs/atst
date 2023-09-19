@@ -14,8 +14,8 @@ jobs:
       # DEBUG: 1
       ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
       ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
-      ENDOR_NAMESPACE: darren-learn
-      CI_RUN: ${{ github.event_name == 'pull_request' && '--ci-run' || '' }}  # use CI Run unless this isn't a PR
+      ENDOR_NAMESPACE: ${{ vars.ENDORLABS_TENANT_NAME }}
+      ENDOR_CI_RUN: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}  # use CI Run unless this isn't a PR
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
