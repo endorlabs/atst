@@ -1,3 +1,12 @@
+test-collapser:
+  stage: build
+  image: ubuntu:22.04
+  before_script:
+    - apt-get update ; apt-get -q install -y python3-venv python3-pip
+    - python3 -m pip install -e .
+  script:
+    - python3 -m gltest
+
 .venv-cache:
   cache:
     - key: cache-$CI_COMMIT_REF_SLUG
@@ -21,16 +30,29 @@ endorlabs-scan:
   image: ubuntu:22.04
   variables:
     # ATST_DEBUG: 1  # set debug for ATST
+    ENDOR_CI_RUN: "true"
+    ENDOR_SCAN_DETACHED_REF_NAME: $CI_COMMIT_REF_NAME
+    ## Best to set the below in repo/group/org variables; listed here for documentation purposes
     ENDOR_API_CREDENTIALS_KEY: $ENDORLABS_API_KEY
     ENDOR_API_CREDENTIALS_SECRET: $ENDORLABS_API_SECRET
-    ENDOR_NAMESPACE: darren-learn
+    ENDOR_NAMESPACE: $ENDORLABS_TENANT_NAME
     ENDORLABS_VERSION: latest
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      # if we're scanning the default brach, turn of CI Run, set it as default in Endor Labs
+      variables:
+        ENDOR_CI_RUN: "false"
+        ENDOR_SCAN_AS_DEFAULT_BRANCH: "true"
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+      # if it's any other brahch, leave CI Run on and tag the ref name
+      variables:
+        ENDOR_CI_RUN_TAGS: "branch=$CI_COMMIT_REF_NAME"
   extends: .venv-cache
   cache:
     policy: pull
   before_script:
     - apt-get update ; apt-get install -y python3-venv python3-pip git
-    - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade .
-    # - ../.atst/bin/endorlabs-atst setup
+    - python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade git+https://github.com/endorlabs/atst@main
+    - ../.atst/bin/endorlabs-atst setup
   script:
-    - ../.atst/bin/endorlabs-atst ctl -- scan --ci-run
+    - ../.atst/bin/endorlabs-atst ctl -- scan
