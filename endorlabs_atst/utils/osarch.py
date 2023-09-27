@@ -10,6 +10,7 @@ OS_MAP = {
 ARCH_MAP = {
     'x86_64': 'amd64',
     'x64': 'amd64',
+    'aarch64': 'arm64',
     'arm64': 'arm64',
     'amd64': 'amd64'
 }
