@@ -1,23 +1,36 @@
 name: Endor Labs AT-ST Self-Scan
-on: push
+on: 
+  push:
+    branches: 
+      - workflow-**
+      - main
+  pull_request: null
 
 jobs:
-  endorlabs-setup-and-scan:
+  endorlabs-scan:
     permissions:
-      contents: read    # Required by actions/checkout@v3 to checkout a private repository.
-    runs-on: ubuntu-latest
-    env:
-      DEBUG: 1
-      ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
-      ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
-      ENDOR_NAMESPACE: ${{ vars.ENDORLABS_TENANT_NAME }}
+      id-token: write
+      contents: read
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
+      - name: Checkout ATST
         uses: actions/checkout@v3
-      - name: Endor Labs Setup
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install ATST
         run: |
-          python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install --upgrade .
-          ../.atst/bin/endorlabs-atst setup
-
-      - name: Endor Labs Host Check
-        run: endorlabs-atst ctl -- scan --ci-run
+          python3 -m venv .venv
+          .venv/bin/python3 -m pip install .
+      - name: Dependency Scan 
+        uses: endorlabs/github-action@main
+        with:
+          namespace: ${{ vars.ENDORLABS_TENANT_NAME }}
+          enable_pr_comments: true
+      - name: Create Monitored Version
+        if: github.event_name == 'push' && (github.ref == 'ref/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        uses: endorlabs/github-action@main
+        with:
+          namespace: ${{ vars.ENDORLABS_TENANT_NAME }}
+          pr: false
