@@ -26,9 +26,11 @@ jobs:
       - name: Dependency Scan 
         uses: endorlabs/github-action@main
         with:
+          namespace: ${{ vars.ENDOR_NAMESPACE }}
           enable_pr_comments: true
       - name: Create Monitored Version
         if: github.event_name == 'push' && (github.ref == 'ref/heads/main' || startsWith(github.ref, 'refs/tags/'))
         uses: endorlabs/github-action@main
         with:
+          namespace: ${{ vars.ENDOR_NAMESPACE }}
           pr: false
