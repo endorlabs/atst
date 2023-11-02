@@ -10,6 +10,7 @@ In your CI, set your namespace and auth variables per Endor Labs docs and:
 
 ```zsh
 python3 -m venv ../.atst
+../.atst/bin/python3 -m pip install endorlabs-atst
 ../.atst/bin/endorlabs-atst setup
 ../.atst/bin/endorctl scan [OPTIIONS]
 ```
