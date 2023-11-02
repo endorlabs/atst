@@ -11,6 +11,7 @@ from .main import main, Status, CI, CLICK_CONTEXT_SETTINGS
 from .utils import osarch
 from .utils.statuswriter import TimedProgress
 from .utils.commandstreamer import StreamedProcess
+from .utils.verdata import endorctl_version
 
 
 def get_endorctl_latest_data(osname:str, arch:str, endpoint:str='https://api.endorlabs.com/meta/version'):
@@ -36,12 +37,26 @@ def download_endorctl(version:str='latest', sha256=None, _dlpath:str=None, _file
     arch = CI.runner_arch
 
     if version == 'latest' or version is None:
+        # get version and sum from API
+        Status.info("Acquiring version data from API")
         (version, _sha256) = get_endorctl_latest_data(osname, arch)
         sha256 = _sha256 if sha256 is None else sha256
+    elif sha256 is None:
+        # Try lookup
+        verkey = f"{version}_{osname}_{arch}".lstrip('v')
+        if verkey in endorctl_version:
+            sha256 = endorctl_version[verkey]['sha256']
+            Status.info(f"Found digest data {verkey}: {sha256}")
+        else:
+            Status.warn(f"Could not find SHA256 digest for '{verkey}'")
 
     sha256 is None and Status.warn("no SHA256 sum data, will skip verification")
+    if not version.startswith('v'):
+        version = f"v{version}"
 
     dlpath = _dlpath.format(osname=osname, version=version, arch=arch)
+    if osname == 'windows':
+        dlpath += '.exe'
     Status.debug("Download path: " + dlpath)
 
     try:
@@ -89,7 +104,7 @@ def check_endorctl_version(command_path:str, ver_rule:str='>=1.5'):
     return (detected_version, semver.match(detected_version))
         
 
-def _setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, namespace, auth):
+def _setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, force_download, namespace, auth):
     """Implementation wrapper for setup() below
     """
     Status.debug(f"subcommand: setup")
@@ -99,11 +114,13 @@ def _setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, 
 
     need_to_download = True
     if os.path.exists(endorlabs_command_path):
-        (version, complies) = check_endorctl_version(endorlabs_command_path, endorlabs_version if endorlabs_version != 'latest' else '>=1.5')
-        if complies:
+        (version, complies) = check_endorctl_version(endorlabs_command_path, endorlabs_version if endorlabs_version != 'latest' else '>=1.6')
+        if complies and not force_download:
             # TODO not sure if this is right, might want to try to see if _current_ version is newer and still complies; could get complex
             Status.info(f"Existing '{endorlabs_command_path}' @{version} is compliant, leaving in place") 
-            need_to_download = False
+            need_to_download = False 
+        elif complies:
+            Status.warn(f"Replacing existing '{endorlabs_command_path}' even though it's version-compliant (@{version}) (force_download)")
     
     if need_to_download:
         Status.report(CI.start_group("Downloading endorctl"))
@@ -142,9 +159,14 @@ def _setup(ctx, endorlabs_version, endorlabs_sha256sum, endorlabs_command_path, 
     envvar='ENDORLABS_COMMAND_PATH',
     hidden=True)
 @click.option(
+    '--force-download',
+    envvar='ENDORLABS_FORCE_DOWNLOAD',
+    is_flag=True,
+    hidden=True)
+@click.option(
     '--namespace',
     envvar='ENDOR_NAMESPACE',
-    required=True)
+    required=False)
 @click.option(
     '--auth',
     help="auth data for endor; follows SCHEMA:AUTHDATA e.g. 'api:API_KEY:API_SECRET'")
