@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.org/endorlabs/atst"
+homepage = "https://github.com/endorlabs/atst"
 
 [project.optional-dependencies]
 test = [
