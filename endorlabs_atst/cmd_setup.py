@@ -14,10 +14,20 @@ from .utils.commandstreamer import StreamedProcess
 from .utils.verdata import endorctl_version
 
 
-def get_endorctl_latest_data(osname:str, arch:str, endpoint:str='https://api.endorlabs.com/meta/version'):
+def get_endorctl_latest_data(osname:str, arch:str, endpoint:str='https://api.endorlabs.com/meta/version', try_count=1):
+    max_tries = 3
     Status.debug(f"Getting version info from {endpoint}")
     resp = requests.get(endpoint)
-    ver_data = resp.json()
+    try:
+        ver_data = resp.json()
+    except Exception as e:
+        Status.error(f"Error decodig response from {endpoint}: {e}\n{resp.text}")
+        if try_count > max_tries:
+            Status.fatal(f"After {max_tries} failures, giving up")
+        else:
+            Status.info(f"Waiting 2s and trying again ({try_count+1}/{max_tries} attempts)")
+            time.sleep(2)
+        return get_endorctl_latest_data(osname, arch, endpoint, try_count+1)
     Status.debug(Status.json(ver_data))
 
     ver_os = ver_data.get('Service',{}).get('Version', None)

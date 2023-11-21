@@ -48,7 +48,7 @@ def endorctl_log_filter(filehandle):
     return _filter
 
 
-def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
+def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, reprint_after=30, extra_env = {}):
     _retry_limit = 1
     detected_endorctl_version = None
     if retry_count > 0:
@@ -77,9 +77,20 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
         with open('endorscan.log', 'a') as logfile:  # TODO make logfile configurable
             ec.run(stderr_handler=endorctl_log_filter(logfile))
             print(CI.start_group("endorctl command"), file=sys.stderr)
+            last_write_time = time.time()
+            last_write_line = ''
+            accumulated_time = 0
             while ec.check_join() is None:
                 if ec.stderr.queue:
-                    print(ec.stderr.getline(), file=sys.stderr, end="")  # TODO filter endor lines
+                    last_write_time = time.time()
+                    last_write_line = ec.stderr.getline()
+                    accumulated_time = 0
+                    print(last_write_line, file=sys.stderr, end="")  # TODO filter endor lines
+                if time.time() - last_write_time > reprint_after: #seconds
+                    accumulated_time += time.time() - last_write_time
+                    last_write_time = time.time()
+                    _, still_line = last_write_line.split(maxsplit=1)
+                    print(f"...    ›{still_line.rstrip()} @ {accumulated_time:.1f}s", file=sys.stderr)
             print(CI.end_group(), file=sys.stderr)
             stdout = ''.join(ec.stdout.queue).rstrip()
             if stdout:
@@ -103,16 +114,22 @@ def run_endorctl(endorctl_path, *endorctl_args, retry_count=0, extra_env = {}):
 
 
 @main.command(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option(
+    '--reprint-interval',
+    type=int,
+    default=30,
+    help="Reprint last STDERR line after this many seconds of no STDERR output (default: 30)"
+)
 @click.argument(
     'endorctl_args',
     nargs=0-1)
 @click.pass_context
-def ctl(ctx, endorctl_args):
+def ctl(ctx, reprint_interval, endorctl_args):
     """Run `endorctl` in a CI wrapper
     """
     Status.debug(f"Started subcommand: ctl {endorctl_args}")
     endorctl_path = os.path.join(ctx.obj['scriptdir'], 'endorctl')
-    exitcode = run_endorctl(endorctl_path, *endorctl_args, extra_env={'ENDOR_LOG_VERBOSE': 'true'})
+    exitcode = run_endorctl(endorctl_path, *endorctl_args, reprint_after=reprint_interval, extra_env={'ENDOR_LOG_VERBOSE': 'true'})
     time.sleep(0.8) # try to let all the thread writers finish before final report
 
     ## Summarize endorctl errors/warnings
