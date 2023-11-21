@@ -94,7 +94,9 @@ class CI_GitHub(CI_Environment):
         return self._arch
 
     def set_env(self, name:str, value:object):
-       return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}\n")
+        env_file = os.getenv('GITHUB_ENV', None)
+        print(f"Exporting env {name}=\"{value}\" by writing to {env_file}")
+        return self._append_to_file(os.getenv('GITHUB_ENV', None), f"{name}={shlex.quote(str(value))}\n")
 
 
 class CI_GitLab(CI_Environment):
