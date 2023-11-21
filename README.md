@@ -8,8 +8,10 @@ Examples of how to use this tool are provided in:
 
 ## Quick start
 
+See example [GitHub Action worfklow](.github/workflows/example-use-main.yml) and [GitLab CI config](.gitlab-ci.yml).
+
 1. Make sure you have Python3, PIP, and the venv package installed in your runner
-2. In your setup section, install this package with `python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install git+https://github.com/endorlabs/atst@main`
+2. In your setup section, install this package with `python3 -m venv ../.atst ; ../.atst/bin/python3 -m pip -q install endorlabs-atst`
 3. Ensure your Endor Labs environment is established; setting `ENDOR_NAMESPACE` and any authentication configuration required (in some CI environments, `setup` can do this for you; see "**Automatic CI Setup**" below)
 4. Run `../.atst/bin/endorlabs-atst setup`
 5. When you've build your project and are ready to test with Endor labs, use `../.atst/bin/endorlabs-atst ctl -- scan` and add any `endorctl` options you require
