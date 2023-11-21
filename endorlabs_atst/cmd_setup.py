@@ -17,7 +17,10 @@ from .utils.verdata import endorctl_version
 def get_endorctl_latest_data(osname:str, arch:str, endpoint:str='https://api.endorlabs.com/meta/version'):
     Status.debug(f"Getting version info from {endpoint}")
     resp = requests.get(endpoint)
-    ver_data = resp.json()
+    try:
+        ver_data = resp.json()
+    except Exception as e:
+        Status.fatal(f"Error decodig response from {endpoint}: {e}\n{resp.text}")
     Status.debug(Status.json(ver_data))
 
     ver_os = ver_data.get('Service',{}).get('Version', None)
