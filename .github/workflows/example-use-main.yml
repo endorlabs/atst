@@ -12,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # DEBUG: 1
+      GITHUB_API_URL: "https://api.github.com/"  # change for GHES
       ENDOR_API_CREDENTIALS_KEY: ${{ vars.ENDORLABS_API_KEY }}
       ENDOR_API_CREDENTIALS_SECRET: ${{ secrets.ENDORLABS_API_SECRET }}
       ENDOR_NAMESPACE: ${{ vars.ENDORLABS_TENANT_NAME }}
-      ENDOR_CI_RUN: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}  # use CI Run unless this isn't a PR
+      ENDOR_SCAN_PR: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}  # use CI Run unless this isn't a PR
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -25,4 +26,6 @@ jobs:
           ../.atst/bin/endorlabs-atst setup
 
       - name: Endor Labs Scan for ${{ github.event_name }}
-        run: endorlabs-atst ctl -- scan $CI_RUN
+        # Running this as a seperate step means the setup environment will be loaded
+        # Note that most of the config is in job-level env vars
+        run: endorlabs-atst ctl -- scan 
