@@ -65,10 +65,12 @@ def _check_regex(ctx, exclude_pattern, include_pattern, hide_exclude, hide_inclu
 def check_regex(ctx, *args, **kwargs):
     """
     BETA - Check include/exclude regex against paths.
-    
+
     Checks children of PATH against regex patterns and prints which files will be
     included. PATH defaults to the current directory if not provided.
     
+    You must provide at least one exclude or include pattern.
+
     \b
     Output is in format `ACTION:PATH:` where ACTION is one of:
       - DEFAULT (this path is included by default)
@@ -77,4 +79,8 @@ def check_regex(ctx, *args, **kwargs):
 
     NOTE: this is an *estimation* of what endorctl will do
     """
+    if kwargs.get('exclude_pattern') is None and kwargs.get('include_pattern') is None:
+        Status.error("No patterns provided")
+        click.echo(ctx.get_help())
+        exit(1)
     _check_regex(ctx, *args, **kwargs)
