@@ -16,16 +16,18 @@ Status = StatusWriter()
 CI = detected_CI()
 
 @click.group(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option('--debug', is_flag=True, hidden=True,
+    default=os.getenv('DEBUG', False) or os.getenv(f'{CONFIG_PREFIX}_DEBUG', False))
 @click.pass_context
-def main(ctx):
+def main(ctx, debug):
     ctx.ensure_object(dict)
     ctx.obj['script'] = os.path.abspath(sys.argv[0])
     ctx.obj['scriptdir'] = os.path.dirname(ctx.obj['script'])
     ctx.obj['ci'] = CI
-    if os.getenv('DEBUG', False) or os.getenv(f'{CONFIG_PREFIX}_DEBUG', False):
+    if debug:
         Status.loglevel = Status.DEBUG
     
-    Status.info(f"Starting {ctx.info_name} {__package_version} from {ctx.obj['script']}")
+    Status.info(f"Starting {ctx.info_name} {__package_version}" +  (f" from {ctx.obj['script']}" if debug else ''))
     Status.debug(f"CI type is {type(CI)}, named '{CI.name}'")
     Status.debug(f"Repo working directory is '{CI.repo_dir}'")
     Status.info(f"Running in {CI.name}")
