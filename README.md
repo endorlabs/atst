@@ -34,3 +34,19 @@ endorlabs-atst setup --endorlabs-version 1.6.8 --endorlabs-sha256sum e4ffa898606
 ```
 
 In all cases, if there is no SHA256 data available, ATST will warn you of this and proceed; while if SHA256 data is available and does not match the `endorctl` that ATST downloads, ATST will terminate with an error.
+
+## Checking `--include` and `--exclude` regexes
+
+Running endorctl (such as with `endorlabs-atst ctl --` or just directly), one can specify regex patterns of paths to exclude/include. ATST lets you check these patterns to see what they'll match.
+
+```sh
+endorlabs-atst check-regex --exclude-pattern REGEX [--include-pattern REGEX]
+```
+
+This will scan your current directory and report how files match:
+
+- DEFAULT for files that would be include regardless
+- EXCLUDE for files that match the exclude pattern
+- INCLUDE for files that match the exclude pattern but are forced to be included again due to matching the include pattern
+
+**BETA** -- note that this feature is experimental, and may not perfectly match the behavior of `endorctl`
